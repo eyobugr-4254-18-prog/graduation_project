@@ -11,7 +11,7 @@
 
 /* I2C Device Addresses (7-bit) */
 #define DS3231_I2C_ADDR         0x68
-#define LCD_I2C_ADDR            0x27
+#define LCD_I2C_ADDR            0x20
 
 /* Pin Configurations */
 #define VALVE_PORT              PORTB

@@ -25,9 +25,12 @@ int main(void) {
     eeprom_driver_init();
     uint32_t saved_pulses = 0;
     float saved_liters = 0.0f;
-    if (eeprom_load_meter_data(&saved_pulses, &saved_liters)) {
-        flow_sensor_set_pulse_count(saved_pulses);
+    if (!flow_sensor_get_pulse_count()){
+        if (eeprom_load_meter_data(&saved_pulses, &saved_liters)) {
+            flow_sensor_set_pulse_count(saved_pulses);
+        }
     }
+    
 
     /* Initialize peripherals and devices */
     button_init();
@@ -35,6 +38,7 @@ int main(void) {
     valve_open();
     flow_sensor_init();
     gsm_power_init();
+    gsm_init();
 
     /* Initialize LCD and display initial screen */
     lcd_init();
@@ -51,6 +55,8 @@ int main(void) {
 
     while (1) {
         uint32_t now = timer_millis();
+
+        
 
         /* Check for button press to wake/activate LCD */
         if (button_was_pressed()) {
@@ -71,7 +77,12 @@ int main(void) {
                 snprintf(display_buf, sizeof(display_buf), "Flow: %d.%02d L/m",
                          (int)flow_rate, (int)((flow_rate - (int)flow_rate) * 100));
                 lcd_print(display_buf);
+                if(uart_available){
+                    uart_print(display_buf);
+                    uart_print("\n");
 
+                }
+                
                 lcd_set_cursor(1, 0);
                 snprintf(display_buf, sizeof(display_buf), "Total:%d.%02d L",
                          (int)total_vol, (int)((total_vol - (int)total_vol) * 100));
